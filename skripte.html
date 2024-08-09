@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Täglicher Bericht</title>
+  <style>
+    .section {
+      display: none;
+    }
+    .active {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <h1>Täglicher Bericht für {{ .Site.Params.user.name }}</h1>
+  <div id="presentation">
+    <div id="weather" class="section"></div>
+    <div id="news" class="section"></div>
+  </div>
+
+  <script>
+    async function fetchWeather() {
+      const location = "{{ .Site.Params.user.location }}";
+      const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${location}&appid=YOUR_API_KEY&lang=de`);
+      const data = await response.json();
+      document.getElementById('weather').innerHTML = `
+        <h2>Wetter</h2>
+        <p>${Math.round(data.main.temp - 273.15)} °C</p>
+        <p>${data.weather[0].description}</p>
+      `;
+    }
+
+    async function fetchNews() {
+      const interests = "{{ .Site.Params.user.interests }}";
+      const response = await fetch(`https://newsapi.org/v2/everything?q=${interests}&apiKey=YOUR_API_KEY&language=de`);
+      const data = await response.json();
+      const newsHtml = data.articles.map(article => `
+        <li>
+          <a href="${article.url}" target="_blank">${article.title}</a>
+        </li>
+      `).join('');
+      document.getElementById('news').innerHTML = `
+        <h2>Nachrichten</h2>
+        <ul>${newsHtml}</ul>
+      `;
+    }
+
+    function showSections() {
+      const sections = document.querySelectorAll('.section');
+      let currentSection = 0;
+
+      function showNextSection() {
+        sections[currentSection].classList.remove('active');
+        currentSection = (currentSection + 1) % sections.length;
+        sections[currentSection].classList.add('active');
+      }
+
+      sections[0].classList.add('active');
+      setInterval(showNextSection, 15000);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      fetchWeather();
+      fetchNews();
+      showSections();
+    });
+  </script>
+</body>
+</html>
