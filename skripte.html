@@ -11,7 +11,7 @@
   </style>
 </head>
 <body>
-  <h1>Täglicher Bericht für {{ .Site.Params.user.name }}</h1>
+  <h1>Täglicher Bericht für {{ Ole }}</h1>
   <div id="presentation">
     <div id="weather" class="section"></div>
     <div id="news" class="section"></div>
@@ -19,7 +19,7 @@
 
   <script>
     async function fetchWeather() {
-      const location = "{{ .Site.Params.user.location }}";
+      const location = "{{ Hannover }}";
       const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${location}&appid=YOUR_API_KEY&lang=de`);
       const data = await response.json();
       document.getElementById('weather').innerHTML = `
@@ -30,7 +30,7 @@
     }
 
     async function fetchNews() {
-      const interests = "{{ .Site.Params.user.interests }}";
+      const interests = "{{ politics }}";
       const response = await fetch(`https://newsapi.org/v2/everything?q=${interests}&apiKey=YOUR_API_KEY&language=de`);
       const data = await response.json();
       const newsHtml = data.articles.map(article => `
